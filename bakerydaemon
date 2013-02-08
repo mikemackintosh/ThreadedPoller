@@ -3,7 +3,7 @@
 usage()
 {
 cat << EOF
-Usage: bakerydaemon [-h|?] [-t] [-v]
+Usage: bakerydaemon [start|stop|restart] [-h|?] [-t] [-v]
 EOF
 }
 
