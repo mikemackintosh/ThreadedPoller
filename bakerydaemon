@@ -1,0 +1,74 @@
+#!/bin/bash
+
+usage()
+{
+cat << EOF
+Usage: bakerydaemon [-h|?] [-t] [-v]
+EOF
+}
+
+createThread()
+{
+
+    for (( i=1; i<= $THREADS; i++ ))
+    do
+        ./worker.php &
+    done
+}
+
+restart()
+{
+    echo "Restarting Bakery Daemon"
+    PROCS=`ps -ef | grep worker.php | grep -c -v grep`
+    if [ PROCS == 0 ]
+    then
+            createThread
+    else
+        THREADS=$PROCS
+        createThread
+    fi
+}
+
+stop()
+{
+    echo "Stopping Bakery Daemon"
+    PROCS=`ps -ef | grep worker.php | grep -c -v grep`
+    if [ PROCS != 0 ]
+    then
+        killall worker.php
+    fi
+}
+
+start()
+{
+    echo "Starting Bakery Daemon"
+    createThread
+}
+
+THREADS=1
+VERBOSE=0
+OPTIND=2
+
+while getopts "ht:v?" OPTION
+do
+    case $OPTION in
+        h)
+            usage
+            exit 1
+            ;;
+        t)
+            THREADS=$OPTARG
+            ;;
+        v)
+            VERBOSE=1
+            ;;
+        \?)
+            usage
+            exit
+            ;;
+    esac
+done
+
+$1
+
+echo "[ Done ]"
